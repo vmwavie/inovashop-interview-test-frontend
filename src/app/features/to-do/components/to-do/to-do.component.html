@@ -1,0 +1,129 @@
+<div class="p-6 max-w-3xl mx-auto">
+  <div class="text-2xl font-bold flex items-center justify-between">
+    <span>Good Morning, Matheus! 👋</span>
+    <div
+      class="flex items-center bg-white px-6 py-1.5 rounded-md custom-border">
+      <span class="material-symbols-outlined">filter_list</span>
+      <p class="pt-2 text-sm font-medium leading-none">Filters</p>
+    </div>
+  </div>
+  <p class="text-gray-500">Today, Wed 6 July 2023</p>
+
+  <ul class="mt-6 space-y-4">
+    <li
+      *ngFor="let task of tasks"
+      class="flex items-center justify-between bg-white py-3 pb-2 px-4 rounded-md custom-border"
+      [ngClass]="{ 'completed-task': task.completed }"
+      [class.completed-task]="task.completed"
+      tabindex="0"
+      role="button">
+      <div class="flex items-center space-x-4">
+        <div class="relative no-line-through">
+          <input
+            (click)="completeTask(task)"
+            (keydown.enter)="completeTask(task)"
+            [checked]="task.completed"
+            type="checkbox"
+            [id]="'task-' + task.id"
+            class="appearance-none w-6 h-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 ease-in-out cursor-pointer" />
+          <span
+            class="material-symbols-outlined text-xl2 absolute text-white bottom-1.5 left-0 right-0 pointer-events-none"
+            [ngClass]="{ hidden: !task.completed }">
+            check
+          </span>
+        </div>
+        <label
+          [for]="'task-' + task.id"
+          class="pb-1.5 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
+          <span class="text-primaryDark dark:text-primaryLight">{{
+            task.name
+          }}</span>
+        </label>
+      </div>
+      <div class="flex items-center space-x-2 no-line-through">
+        <div
+          class="max-sm:hidden flex items-center justify-center space-x-2 bg-subItemLight px-3 py-1.5 rounded-md">
+          <span class="material-symbols-outlined text-gray-500">
+            schedule
+          </span>
+          <span class="text-gray-500"> {{ task.time }}</span>
+        </div>
+        <div class="relative">
+          <button
+            (click)="toggleDropdown(task.id)"
+            class="text-gray-500 hover:text-black outline-none"
+            [ngClass]="{ '!text-black': task.showDropdown }">
+            <span
+              class="bg-subItemLight px-2 py-1.5 rounded-md material-symbols-outlined">
+              more_vert
+            </span>
+          </button>
+          <div
+            *ngIf="task.showDropdown"
+            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <div class="py-1">
+              <a
+                href="#"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                (click)="editTask(task.id)"
+                >View More Info</a
+              >
+              <a
+                href="#"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                (click)="editTask(task.id)"
+                >Edit</a
+              >
+              <a
+                href="#"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                (click)="deleteTask(task.id)"
+                >Delete</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <div class="mt-8 flex justify-center items-center">
+    <button
+      (click)="previousPage()"
+      [disabled]="currentPage === 1"
+      class="material-symbols-outlined text-gray-600 hover:text-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+      aria-label="Previous page">
+      chevron_left
+    </button>
+
+    <div class="flex space-x-1 mx-4">
+      <ng-container *ngFor="let page of getPageRange(); let i = index">
+        <button
+          *ngIf="page !== '...'"
+          [class.bg-blue-500]="currentPage === page"
+          [class.text-white]="currentPage === page"
+          class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-200 hover:bg-gray-200"
+          [attr.aria-current]="currentPage === page ? 'page' : null">
+          {{ page }}
+        </button>
+        <span
+          *ngIf="page === '...'"
+          class="w-8 h-8 flex items-center justify-center text-gray-500"
+          >...</span
+        >
+      </ng-container>
+    </div>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="material-symbols-outlined text-gray-600 hover:text-gray-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+      aria-label="Next page">
+      chevron_right
+    </button>
+  </div>
+  <button
+    class="fixed bottom-8 right-8 w-14 h-14 text-white flex items-center justify-center transition-colors duration-200 add-button"
+    aria-label="Add new task">
+    <span class="material-symbols-outlined text-2xl">add</span>
+  </button>
+</div>
