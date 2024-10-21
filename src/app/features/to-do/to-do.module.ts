@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { todoComponent } from './components/to-do/to-do.component';
+import { NgModule } from '@angular/core';
+import { taskModalComponent } from './components/task-modal/task-modal.component';
+import { TodoComponent } from './components/to-do/to-do.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, todoComponent],
-  exports: [],
+  declarations: [TodoComponent, taskModalComponent],
+  imports: [CommonModule],
+  exports: [TodoComponent, taskModalComponent],
 })
 export class ToDoModule {}

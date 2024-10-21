@@ -1,15 +1,22 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  AfterViewInit,
+  Inject,
+  PLATFORM_ID,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { taskModalComponent } from '../task-modal/task-modal.component';
 
 @Component({
   selector: 'app-to-do',
   templateUrl: './to-do.component.html',
   styleUrls: ['./to-do.component.sass'],
-  standalone: true,
-  imports: [CommonModule],
 })
-export class todoComponent implements AfterViewInit {
+export class TodoComponent implements AfterViewInit, OnInit {
   constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  @ViewChild(taskModalComponent) taskModal!: taskModalComponent;
 
   page = 1;
   currentPage = 1;
@@ -74,6 +81,10 @@ export class todoComponent implements AfterViewInit {
     },
   ];
 
+  ngOnInit(): void {
+    console.log('aaa');
+  }
+
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -129,6 +140,12 @@ export class todoComponent implements AfterViewInit {
         ? { ...task, showDropdown: !task.showDropdown }
         : { ...task, showDropdown: false }
     );
+  }
+
+  viewMoreInfo(taskId: number) {
+    this.toggleDropdown(taskId);
+    console.log('a' + this.taskModal.isOpened + taskId);
+    this.taskModal.handleToggleModal();
   }
 
   editTask(taskId: number) {
