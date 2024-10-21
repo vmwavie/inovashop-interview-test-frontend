@@ -6,83 +6,64 @@ import {
   PLATFORM_ID,
   OnInit,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { taskModalComponent } from '../task-modal/task-modal.component';
+import { Subscription } from 'rxjs';
+import { TaskWebSocketService } from '../../services/to-do.websocket';
+import { Task } from '../../models/task.models';
 
 @Component({
   selector: 'app-to-do',
   templateUrl: './to-do.component.html',
   styleUrls: ['./to-do.component.sass'],
 })
-export class TodoComponent implements AfterViewInit, OnInit {
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object,
+    private taskWebSocketService: TaskWebSocketService
+  ) {}
   @ViewChild(taskModalComponent) taskModal!: taskModalComponent;
 
   page = 1;
   currentPage = 1;
   totalPages = 10;
 
-  tasks = [
-    {
-      id: 1,
-      name: 'Jogging',
-      time: '06:00 - 07:30',
-      completed: true,
-      showDropdown: false,
-    },
-    {
-      id: 2,
-      name: 'Read a book',
-      time: '08:00 - 09:00',
-      completed: false,
-      showDropdown: false,
-    },
-    {
-      id: 3,
-      name: 'Wireframing new product',
-      time: '09:00 - 11:00',
-      completed: true,
-      showDropdown: false,
-    },
-    {
-      id: 4,
-      name: 'Moodboard Landing Page',
-      time: '11:00 - 13:00',
-      completed: false,
-      showDropdown: false,
-    },
-    {
-      id: 5,
-      name: 'Weekly meeting',
-      time: '13:00 - 14:00',
-      completed: true,
-      showDropdown: false,
-    },
-    {
-      id: 6,
-      name: 'Design PPT for Sharing Session #2',
-      time: '14:00 - 16:00',
-      completed: false,
-      showDropdown: false,
-    },
-    {
-      id: 7,
-      name: 'Ngopi with Bojo',
-      time: '17:00 - 18:30',
-      completed: true,
-      showDropdown: false,
-    },
-    {
-      id: 8,
-      name: 'Watch Netflix - Vinland Saga',
-      time: '19:00 - 20:00',
-      completed: false,
-      showDropdown: false,
-    },
-  ];
+  private taskSubscription: Subscription | undefined;
 
-  ngOnInit(): void {
-    console.log('aaa');
+  tasks: Task[] = [];
+
+  ngOnInit() {
+    this.taskSubscription = this.taskWebSocketService.getTasks().subscribe(
+      message => {
+        console.log('Received message:', message);
+
+        if (message.type === 'taskCreated') {
+          message.data.showDropdown = false;
+          this.tasks.push(message.data);
+        } else if (message.type === 'taskUpdated') {
+          const index = this.tasks.findIndex(
+            task => task.id === message.data.id
+          );
+          if (index !== -1) {
+            this.tasks[index] = message.data;
+          }
+        } else if (message.type === 'taskDeleted') {
+          const index = this.tasks.findIndex(task => task.id === message.data);
+          if (index !== -1) {
+            this.tasks.splice(index, 1);
+          }
+        }
+      },
+      error => console.error('Error:', error)
+    );
+  }
+
+  ngOnDestroy() {
+    if (this.taskSubscription) {
+      this.taskSubscription.unsubscribe();
+    }
+    this.taskWebSocketService.close();
   }
 
   previousPage() {
@@ -156,13 +137,7 @@ export class TodoComponent implements AfterViewInit, OnInit {
     console.log('Delete task', taskId);
   }
 
-  completeTask(task: {
-    id: number;
-    completed: boolean;
-    name: string;
-    showDropdown: boolean;
-    time: string;
-  }) {
+  completeTask(task: Task) {
     this.tasks = this.tasks.map(item =>
       item.id === task.id ? { ...item, completed: !task.completed } : item
     );
