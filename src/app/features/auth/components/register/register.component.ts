@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../services/auth.services';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -15,12 +18,15 @@ export class RegisterComponent implements OnInit {
   passwordsMatch = false;
   showPasswordMatch = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
-      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirm_password: ['', Validators.required],
@@ -74,7 +80,36 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     if (this.registerForm.valid && this.passwordsMatch) {
-      console.log(this.registerForm.value);
+      this.authService.register(this.registerForm.value).subscribe(
+        data => {
+          console.log('User registered successfully:', data);
+          this.router.navigate(['/to-do']);
+        },
+        error => {
+          console.log('Error registering user:', error);
+
+          if (error.error.message === 'email_in_use') {
+            Swal.fire('Error', 'Email already exists.', 'error');
+            return;
+          }
+
+          if (
+            error.error.msg ===
+            '"password" length must be at least 8 characters long'
+          ) {
+            Swal.fire('Error', 'Password is too short.', 'error');
+            return;
+          }
+
+          Swal.fire(
+            'Error',
+            'Internal error occurred, please try again in few moments.',
+            'error'
+          );
+
+          return;
+        }
+      );
     }
   }
 }

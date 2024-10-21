@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { API_URL } from '@env';
 
@@ -40,7 +40,7 @@ export class AuthService {
     return this.http.post<any>(`${API_URL}/auth/login`, credentials).pipe(
       map(response => {
         if (response.error) {
-          return false; //to-do
+          return false;
         }
 
         if (isPlatformBrowser(this.platformId)) {
@@ -57,16 +57,65 @@ export class AuthService {
 
   register(user: {
     name: string;
-    username: string;
     email: string;
     password: string;
     confirm_password: string;
   }) {
-    return this.http.post(`${API_URL}/auth/register`, user).pipe(
+    return this.http.post<any>(`${API_URL}/auth/register`, user).pipe(
       map(response => {
-        console.log(response);
+        if (response.error) {
+          return response.error;
+        }
+
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem('user', JSON.stringify(response.data));
+          localStorage.setItem('bearer', response.accessToken);
+        }
+
+        return response.data;
       })
     );
+  }
+
+  isAuthenticated(): Observable<boolean> {
+    const token = isPlatformBrowser(this.platformId)
+      ? localStorage.getItem('bearer')
+      : null;
+
+    const user = this.getUserFromStorage();
+
+    if (!token || !user || !user.id) {
+      return of(false);
+    }
+
+    return this.http
+      .get<any>(`${API_URL}/user/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId: user.id,
+        },
+      })
+      .pipe(
+        map(response => {
+          if (response.error) {
+            this.logout();
+            return false;
+          }
+
+          if (response && response.data.id === user.id) {
+            return true;
+          } else {
+            this.logout();
+            return false;
+          }
+        }),
+        catchError(() => {
+          this.logout();
+          return of(false);
+        })
+      );
   }
 
   logout() {
