@@ -1,0 +1,71 @@
+<div
+  class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div class="flex justify-center items-center">
+      <h2 class="text-textDark dark:text-white">Login</h2>
+    </div>
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="mt-8 space-y-6">
+      <div class="rounded-md">
+        <div>
+          <label for="email" class="sr-only">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="text"
+            formControlName="email"
+            required
+            class="custom-input relative block w-full px-4 py-3 sm:text-sm bg-inputBackgroundLight dark:bg-inputBackgroundDark text-black dark:text-white rounded-t-md"
+            placeholder="Email" />
+        </div>
+        <div class="relative">
+          <label for="password" class="sr-only">Password</label>
+          <input
+            id="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            required
+            class="custom-input my-2 relative block w-full px-4 py-3 sm:text-sm bg-inputBackgroundLight dark:bg-inputBackgroundDark text-black dark:text-white rounded-b-md"
+            placeholder="Password" />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+            <span
+              class="material-symbols-outlined custom-icon"
+              *ngIf="showPassword">
+              visibility_off
+            </span>
+            <span
+              class="material-symbols-outlined custom-icon"
+              *ngIf="!showPassword">
+              visibility
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid"
+          class="submit-button text-white dark:text-black group relative w-full flex justify-center py-2 px-4 disabled:cursor-not-allowed">
+          Sign In
+        </button>
+      </div>
+      <div class="flex items-center justify-end items-end mt-6">
+        <p class="text-right text-textInfo">
+          Don't you have an account yet?
+          <a
+            class="text-primary hover:text-secondaryDarkHover text-secondaryDark cursor-pointer"
+            routerLink="/register">
+            Sign Up.
+          </a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
