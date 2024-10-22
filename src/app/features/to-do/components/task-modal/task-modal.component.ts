@@ -80,6 +80,8 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
     if (this.target === 'View') {
       this.taskForm.disable();
     }
+
+    this.updateFormState();
   }
 
   handleToggleModal() {
@@ -87,6 +89,14 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
     if (!this.isOpened) {
       this.task = undefined;
       this.target = 'View';
+    }
+  }
+
+  updateFormState() {
+    if (this.target === 'View') {
+      this.taskForm.disable();
+    } else {
+      this.taskForm.enable();
     }
   }
 

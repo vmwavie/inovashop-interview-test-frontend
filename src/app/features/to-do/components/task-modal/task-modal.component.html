@@ -17,8 +17,7 @@
           type="text"
           id="title"
           formControlName="title"
-          [attr.disabled]="target === 'View'"
-          [ngClass]="{ 'resize-none cursor-not-allowed': target === 'View' }"
+          [ngClass]="{ 'cursor-not-allowed': target === 'View' }"
           class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight" />
       </div>
       <div class="mb-4">
@@ -28,7 +27,6 @@
         <textarea
           id="description"
           formControlName="description"
-          [attr.disabled]="target === 'View'"
           maxlength="300"
           [ngClass]="{ 'resize-none cursor-not-allowed': target === 'View' }"
           class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight"></textarea>
@@ -38,8 +36,8 @@
         <input
           type="text"
           id="status"
-          [attr.value]="task?.completed ? 'completed' : 'incompleted'"
-          [attr.disabled]="true"
+          [value]="task?.completed ? 'completed' : 'incompleted'"
+          disabled
           class="cursor-not-allowed mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight" />
       </div>
       <div class="mb-4" *ngIf="target !== 'Add'">
@@ -49,8 +47,8 @@
         <input
           type="text"
           id="created_at"
-          [attr.value]="task?.created_at | date: 'medium'"
-          [attr.disabled]="true"
+          [value]="task?.created_at | date: 'medium'"
+          disabled
           class="cursor-not-allowed mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight" />
       </div>
       <div class="flex justify-center" *ngIf="target !== 'View'">
