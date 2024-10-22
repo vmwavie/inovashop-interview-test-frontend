@@ -77,6 +77,10 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
       this.taskForm.reset();
     }
 
+    if (this.target === 'View') {
+      this.taskForm.disable();
+    }
+
     this.target = target;
   }
 

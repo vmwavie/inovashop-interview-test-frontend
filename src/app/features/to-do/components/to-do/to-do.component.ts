@@ -202,10 +202,9 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     this.taskModal.handleSetData('Add', undefined);
   }
   viewMoreInfo(task: Task) {
-    // this.toggleDropdown(taskId);
-    // console.log('a' + this.taskModal.isOpened + taskId);
-    // this.taskModal.handleToggleModal();
-    console.log(task);
+    this.toggleDropdown(task.id);
+    this.taskModal.handleSetData('View', task);
+    this.taskModal.handleToggleModal();
   }
 
   editTask(task: Task) {

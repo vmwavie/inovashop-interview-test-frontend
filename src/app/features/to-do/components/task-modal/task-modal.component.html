@@ -17,6 +17,8 @@
           type="text"
           id="title"
           formControlName="title"
+          [attr.disabled]="target === 'View' ? '' : null"
+          [ngClass]="{ 'resize-none cursor-not-allowed': target === 'View' }"
           class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight" />
       </div>
       <div class="mb-4">
@@ -26,7 +28,9 @@
         <textarea
           id="description"
           formControlName="description"
+          [attr.disabled]="target === 'View' ? '' : null"
           maxlength="300"
+          [ngClass]="{ 'resize-none cursor-not-allowed': target === 'View' }"
           class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm dark:bg-tertiaryDark bg-tertiaryLight"></textarea>
       </div>
       <div class="mb-1" *ngIf="target !== 'Add'">
@@ -40,7 +44,7 @@
           <strong>Created At: </strong>{{ task?.created_at | date: 'medium' }}
         </p>
       </div>
-      <div class="flex justify-center">
+      <div class="flex justify-center" *ngIf="target !== 'View'">
         <button type="submit" class="submit-button text-white">
           {{ target === 'Add' ? 'Create' : 'Save' }}
         </button>
