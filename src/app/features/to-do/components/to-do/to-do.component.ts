@@ -33,13 +33,16 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   currentPage = 1;
   totalPages = 0;
   perPage = '10';
+  showFilters = false;
+  user_name = '';
+  sortBy = '';
 
   private taskSubscription: Subscription | undefined;
 
   tasks: Task[] = [];
 
-  getAllTasks(page: number, perPage: string) {
-    this.todoService.getAllTasks(page, perPage).subscribe(
+  getAllTasks(page: number, perPage: string, sortBy?: string | undefined) {
+    this.todoService.getAllTasks(page, perPage, sortBy).subscribe(
       response => {
         console.log({ response });
 
@@ -66,6 +69,13 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const userData = localStorage.getItem('user');
+
+    if (userData) {
+      const user = JSON.parse(userData);
+      this.user_name = user.name || '';
+    }
+
     this.getAllTasks(1, this.perPage);
     this.taskSubscription = this.taskWebSocketService.getTasks().subscribe(
       message => {
@@ -96,11 +106,33 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     );
   }
 
+  getTodayDate(): string {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    };
+    return today.toLocaleDateString('en-US', options);
+  }
+
   ngOnDestroy() {
     if (this.taskSubscription) {
       this.taskSubscription.unsubscribe();
     }
     this.taskWebSocketService.close();
+  }
+
+  toggleFilters() {
+    this.showFilters = !this.showFilters;
+  }
+
+  sortTasks(event: Event) {
+    const sortBy = (event.target as HTMLSelectElement).value;
+    this.sortBy = sortBy;
+
+    this.getAllTasks(1, this.perPage, sortBy);
   }
 
   previousPage() {

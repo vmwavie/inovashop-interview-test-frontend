@@ -1,14 +1,34 @@
 <div class="p-6 max-w-3xl mx-auto">
   <app-task-modal></app-task-modal>
   <div class="text-2xl font-bold flex items-center justify-between">
-    <span>Good Morning, Matheus! 👋</span>
-    <div
-      class="flex items-center bg-white px-6 py-1.5 rounded-md custom-border">
-      <span class="material-symbols-outlined">filter_list</span>
-      <p class="pt-2 text-sm font-medium leading-none">Filters</p>
+    <span>Good Morning, {{ user_name }}! 👋</span>
+    <div class="relative">
+      <button
+        (click)="toggleFilters()"
+        class="flex items-center bg-white px-6 py-1.5 rounded-md custom-border">
+        <span class="material-symbols-outlined">filter_list</span>
+        <p class="pt-2 text-sm font-medium leading-none">Filters</p>
+      </button>
+      <div
+        *ngIf="showFilters"
+        class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+        <div class="p-4">
+          <p class="text-sm font-semibold mb-2">Sort by</p>
+          <select
+            (change)="sortTasks($event)"
+            class="w-full text-sm p-2 border rounded-md mb-4">
+            <option value="title_asc">Title (A-Z)</option>
+            <option value="title_desc">Title (Z-A)</option>
+            <option value="createdAt_asc">Created (Oldest first)</option>
+            <option value="createdAt_desc">Created (Newest first)</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
-  <p class="text-gray-500">Today, Wed 6 July 2023</p>
+
+  <p class="text-gray-500">{{ getTodayDate() }}</p>
+
   <div *ngIf="tasks.length > 0">
     <ul class="mt-6 space-y-4">
       <li

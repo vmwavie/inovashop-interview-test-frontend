@@ -11,11 +11,16 @@ import { Task } from '../models/task.models';
 export class ToDoService {
   constructor(private http: HttpClient) {}
 
-  getAllTasks(page: number, perPage: string): Observable<any> {
-    const body = {
+  getAllTasks(
+    page: number,
+    perPage: string,
+    sortBy?: string | undefined
+  ): Observable<any> {
+    const body: any = {
       userId: this.getUserId(),
-      page: page,
-      perPage: perPage,
+      page,
+      perPage,
+      sortBy: sortBy,
     };
 
     const bearerToken = this.getBearerToken();
