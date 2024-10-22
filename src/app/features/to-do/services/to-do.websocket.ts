@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
+import { WEBSOCKET_API } from '@env';
 import { Observable, share, Subject } from 'rxjs';
 import io from 'socket.io-client';
 
@@ -12,7 +13,7 @@ export class TaskWebSocketService {
   public messages$ = this.messagesSubject$.asObservable();
 
   constructor() {
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(WEBSOCKET_API, {
       auth: {
         userId: this.getUserId(),
       },

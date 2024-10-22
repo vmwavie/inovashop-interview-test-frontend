@@ -5,7 +5,7 @@ interface Task {
   completed: boolean;
   userId: number | string;
   showDropdown?: boolean;
-  created_at?: string;
+  created_at: string;
 }
 
 export type { Task };

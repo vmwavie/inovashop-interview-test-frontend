@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
@@ -12,6 +13,8 @@ import { taskModalComponent } from '../task-modal/task-modal.component';
 import { Subscription } from 'rxjs';
 import { TaskWebSocketService } from '../../services/to-do.websocket';
 import { Task } from '../../models/task.models';
+import { ToDoService } from '../../services/to-do.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-to-do',
@@ -21,7 +24,8 @@ import { Task } from '../../models/task.models';
 export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
-    private taskWebSocketService: TaskWebSocketService
+    private taskWebSocketService: TaskWebSocketService,
+    private todoService: ToDoService
   ) {}
   @ViewChild(taskModalComponent) taskModal!: taskModalComponent;
 
@@ -33,7 +37,34 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
 
   tasks: Task[] = [];
 
+  getAllTasks(page: number) {
+    this.todoService.getAllTasks(page).subscribe(
+      response => {
+        console.log({ response });
+
+        if (
+          response.totalCount >= 1 &&
+          this.currentPage > 1 &&
+          this.tasks.length === 0
+        ) {
+          this.currentPage = this.currentPage - 1;
+          this.getAllTasks(this.currentPage);
+        }
+
+        this.tasks = response.tasks.map((task: any) => ({
+          ...task,
+          showDropdown: false,
+        }));
+        this.totalPages = response.totalPages;
+      },
+      error => {
+        console.error('Error fetching tasks:', error);
+      }
+    );
+  }
+
   ngOnInit() {
+    this.getAllTasks(1);
     this.taskSubscription = this.taskWebSocketService.getTasks().subscribe(
       message => {
         console.log('Received message:', message);
@@ -70,16 +101,21 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+
+    this.getAllTasks(this.currentPage);
   }
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
+
+    this.getAllTasks(this.currentPage);
   }
 
   goToPage(page: number) {
     this.currentPage = page;
+    this.getAllTasks(this.currentPage);
   }
 
   getPageRange(): (number | string)[] {
@@ -124,17 +160,40 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   viewMoreInfo(taskId: number) {
-    this.toggleDropdown(taskId);
-    console.log('a' + this.taskModal.isOpened + taskId);
-    this.taskModal.handleToggleModal();
+    // this.toggleDropdown(taskId);
+    // console.log('a' + this.taskModal.isOpened + taskId);
+    // this.taskModal.handleToggleModal();
+    console.log(taskId);
   }
 
   editTask(taskId: number) {
-    console.log('Edit task', taskId);
+    this.toggleDropdown(taskId);
   }
 
   deleteTask(taskId: number) {
-    console.log('Delete task', taskId);
+    this.toggleDropdown(taskId);
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this task!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.todoService.deleteTaskById(taskId).subscribe(
+          response => {
+            console.log('Task deleted:', response);
+            this.getAllTasks(this.currentPage);
+          },
+          error => {
+            console.error('Error deleting task:', error);
+          }
+        );
+      }
+    });
   }
 
   completeTask(task: Task) {
