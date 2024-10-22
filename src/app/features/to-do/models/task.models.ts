@@ -6,6 +6,7 @@ interface Task {
   userId: number | string;
   showDropdown?: boolean;
   created_at: string;
+  last_updated?: string;
 }
 
 export type { Task };

@@ -56,6 +56,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
           ...task,
           showDropdown: false,
         }));
+
         this.totalPages = response.totalPages;
       },
       error => {
@@ -80,6 +81,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
           const index = this.tasks.findIndex(
             task => task.id === message.data.id
           );
+
           if (index !== -1) {
             this.tasks[index] = message.data;
           }
@@ -205,8 +207,16 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   completeTask(task: Task) {
-    this.tasks = this.tasks.map(item =>
-      item.id === task.id ? { ...item, completed: !task.completed } : item
+    task.completed = !task.completed;
+
+    this.todoService.updateTask(task).subscribe(
+      response => {
+        console.log('Task updated:', response);
+      },
+      error => {
+        console.error('Error updating task:', error);
+        Swal.fire('Error', 'Failed to update task status', 'error');
+      }
     );
   }
 
