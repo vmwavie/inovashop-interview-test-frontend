@@ -97,6 +97,8 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
       } else if (this.target === 'Edit' && this.task) {
         console.log('Edit task:', formData);
       }
+
+      this.taskForm.reset();
       this.handleToggleModal();
     }
   }
