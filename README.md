@@ -54,5 +54,3 @@ To run various tasks, use the following npm scripts:
 - `npm run lint`: Runs ESLint to check your code for potential errors and stylistic issues.
 - `npm run serve:ssr:frontend`: Starts the server-side rendering of the Angular application.
 - `docker compose up`: Builds and runs the application using Docker Compose.
-
-I hope this updated documentation helps you understand and contribute to the project!
