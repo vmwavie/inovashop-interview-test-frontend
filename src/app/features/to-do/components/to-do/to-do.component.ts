@@ -9,7 +9,7 @@ import {
   ViewChild,
   OnDestroy,
 } from '@angular/core';
-import { taskModalComponent } from '../task-modal/task-modal.component';
+import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { Subscription } from 'rxjs';
 import { TaskWebSocketService } from '../../services/to-do.websocket';
 import { Task } from '../../models/task.models';
@@ -27,18 +27,19 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     private taskWebSocketService: TaskWebSocketService,
     private todoService: ToDoService
   ) {}
-  @ViewChild(taskModalComponent) taskModal!: taskModalComponent;
+  @ViewChild(TaskModalComponent) taskModal!: TaskModalComponent;
 
   page = 1;
   currentPage = 1;
-  totalPages = 10;
+  totalPages = 0;
+  perPage = '10';
 
   private taskSubscription: Subscription | undefined;
 
   tasks: Task[] = [];
 
-  getAllTasks(page: number) {
-    this.todoService.getAllTasks(page).subscribe(
+  getAllTasks(page: number, perPage: string) {
+    this.todoService.getAllTasks(page, perPage).subscribe(
       response => {
         console.log({ response });
 
@@ -48,7 +49,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
           this.tasks.length === 0
         ) {
           this.currentPage = this.currentPage - 1;
-          this.getAllTasks(this.currentPage);
+          this.getAllTasks(this.currentPage, this.perPage);
         }
 
         this.tasks = response.tasks.map((task: any) => ({
@@ -64,12 +65,15 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.getAllTasks(1);
+    this.getAllTasks(1, this.perPage);
     this.taskSubscription = this.taskWebSocketService.getTasks().subscribe(
       message => {
         console.log('Received message:', message);
 
-        if (message.type === 'taskCreated') {
+        if (
+          message.type === 'taskCreated' &&
+          this.tasks.length < Number(this.perPage)
+        ) {
           message.data.showDropdown = false;
           this.tasks.push(message.data);
         } else if (message.type === 'taskUpdated') {
@@ -102,7 +106,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
       this.currentPage--;
     }
 
-    this.getAllTasks(this.currentPage);
+    this.getAllTasks(this.currentPage, this.perPage);
   }
 
   nextPage() {
@@ -110,12 +114,12 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
       this.currentPage++;
     }
 
-    this.getAllTasks(this.currentPage);
+    this.getAllTasks(this.currentPage, this.perPage);
   }
 
   goToPage(page: number) {
     this.currentPage = page;
-    this.getAllTasks(this.currentPage);
+    this.getAllTasks(this.currentPage, this.perPage);
   }
 
   getPageRange(): (number | string)[] {
@@ -159,6 +163,10 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     );
   }
 
+  addNewTask() {
+    this.taskModal.handleToggleModal();
+    this.taskModal.handleSetData('Add', undefined);
+  }
   viewMoreInfo(taskId: number) {
     // this.toggleDropdown(taskId);
     // console.log('a' + this.taskModal.isOpened + taskId);
@@ -186,7 +194,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
         this.todoService.deleteTaskById(taskId).subscribe(
           response => {
             console.log('Task deleted:', response);
-            this.getAllTasks(this.currentPage);
+            this.getAllTasks(this.currentPage, this.perPage);
           },
           error => {
             console.error('Error deleting task:', error);

@@ -10,11 +10,11 @@ import { API_URL } from '@env';
 export class ToDoService {
   constructor(private http: HttpClient) {}
 
-  getAllTasks(page: number): Observable<any> {
+  getAllTasks(page: number, perPage: string): Observable<any> {
     const body = {
       userId: this.getUserId(),
       page: page,
-      perPage: '10',
+      perPage: perPage,
     };
 
     const bearerToken = this.getBearerToken();
@@ -42,6 +42,22 @@ export class ToDoService {
       headers: headers,
       body: body,
     });
+  }
+
+  createTask(title: string, description: string): Observable<any> {
+    const body = {
+      userId: this.getUserId(),
+      title,
+      description,
+    };
+
+    const bearerToken = this.getBearerToken();
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${bearerToken}`,
+    });
+
+    return this.http.post(`${API_URL}/task/`, body, { headers });
   }
 
   private getUserId(): number | null {
