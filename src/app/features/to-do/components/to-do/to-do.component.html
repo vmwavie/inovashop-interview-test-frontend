@@ -2,7 +2,7 @@
   <app-task-modal></app-task-modal>
   <div class="text-2xl font-bold flex items-center justify-between">
     <span>Good Morning, {{ user_name }}! 👋</span>
-    <div class="relative">
+    <div class="relative" appClickOutside (clickOutside)="closeFilters()">
       <button
         (click)="toggleFilters()"
         class="flex items-center bg-white px-6 py-1.5 rounded-md custom-border">

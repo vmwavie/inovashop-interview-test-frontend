@@ -140,6 +140,10 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     this.showFilters = !this.showFilters;
   }
 
+  closeFilters() {
+    this.showFilters = false;
+  }
+
   sortTasks(event: Event) {
     const sortBy = (event.target as HTMLSelectElement).value;
     this.sortBy = sortBy;
@@ -202,6 +206,8 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   toggleDropdown(taskId: number, event?: Event | null) {
+    this.showFilters = false;
+
     if (event) {
       event.stopPropagation();
     }
