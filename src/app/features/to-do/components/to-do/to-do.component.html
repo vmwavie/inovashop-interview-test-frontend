@@ -7,22 +7,31 @@
 <div class="p-6 max-w-3xl mx-auto">
   <app-task-modal></app-task-modal>
   <div class="text-2xl font-bold flex items-center justify-between">
-    <span>Good Morning, {{ user_name }}! 👋</span>
+    <span class="text-textDark dark:text-white"
+      >Good Morning, {{ user_name }}! 👋</span
+    >
     <div class="relative" appClickOutside (clickOutside)="closeFilters()">
       <button
         (click)="toggleFilters()"
-        class="flex items-center bg-white px-6 py-1.5 rounded-md custom-border">
-        <span class="material-symbols-outlined">filter_list</span>
-        <p class="pt-2 text-sm font-medium leading-none">Filters</p>
+        class="flex items-center bg-white dark:bg-inputBackgroundDark px-6 py-1.5 rounded-md custom-border">
+        <span class="material-symbols-outlined text-textDark dark:text-white"
+          >filter_list</span
+        >
+        <p
+          class="pt-2 text-sm font-medium leading-none text-textDark dark:text-white">
+          Filters
+        </p>
       </button>
       <div
         *ngIf="showFilters"
-        class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+        class="absolute right-0 mt-2 w-64 bg-white dark:bg-inputBackgroundDark rounded-md shadow-lg z-10">
         <div class="p-4">
-          <p class="text-sm font-semibold mb-2">Sort by</p>
+          <p class="text-sm font-semibold mb-2 text-textDark dark:text-white">
+            Sort by
+          </p>
           <select
             (change)="sortTasks($event)"
-            class="w-full text-sm p-2 border rounded-md mb-4">
+            class="w-full text-sm p-2 border dark:border-[#37464f] rounded-md mb-4 text-textDark dark:text-white bg-white dark:bg-inputBackgroundDark">
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
             <option value="createdAt_asc">Created (Oldest first)</option>
@@ -39,7 +48,7 @@
     <ul class="mt-6 space-y-4">
       <li
         *ngFor="let task of tasks"
-        class="flex items-center justify-between bg-white py-3 pb-2 px-4 rounded-md custom-border"
+        class="flex items-center justify-between bg-white dark:bg-inputBackgroundDark py-3 pb-2 px-4 rounded-md custom-border"
         [ngClass]="{ 'completed-task': task.completed }"
         [class.completed-task]="task.completed"
         tabindex="0"
@@ -69,7 +78,7 @@
         </div>
         <div class="flex items-center space-x-2 no-line-through">
           <div
-            class="max-sm:hidden flex items-center justify-center space-x-2 bg-subItemLight px-3 py-1.5 rounded-md">
+            class="max-sm:hidden flex items-center justify-center space-x-2 bg-subItemLight dark:bg-subItemDark px-3 py-1.5 rounded-md">
             <span class="material-symbols-outlined text-gray-500">
               schedule
             </span>
@@ -80,32 +89,31 @@
           <div class="relative" #dropdownContainer>
             <button
               (click)="toggleDropdown(task.id, $event)"
-              class="text-gray-500 hover:text-black outline-none"
-              [ngClass]="{ '!text-black': task.showDropdown }">
+              class="text-gray-500 hover:text-black dark:hover:text-white outline-none"
+              [ngClass]="{ 'text-black dark:text-white': task.showDropdown }">
               <span
-                class="bg-subItemLight px-2 py-1.5 rounded-md material-symbols-outlined">
+                class="bg-subItemLight dark:bg-subItemDark px-2 py-1.5 rounded-md material-symbols-outlined">
                 more_vert
               </span>
             </button>
             <div
               *ngIf="task.showDropdown"
               (clickOutside)="closeDropdown()"
-              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+              class="absolute right-0 mt-2 w-48 bg-white dark:bg-inputBackgroundDark rounded-md shadow-lg z-10">
               <div class="py-1">
                 <button
-                  class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  (click)="viewMoreInfo(task)">
+                  class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-[#58d7fd] dark:hover:bg-inputBackgroundDark">
                   View More Info
                 </button>
 
                 <button
-                  class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:text-[#58d7fd] dark:hover:bg-inputBackgroundDark"
                   (click)="editTask(task)">
                   Edit
                 </button>
 
                 <button
-                  class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  class="text-left w-full block px-4 py-2 text-sm dark:text-white text-gray-700 hover:bg-gray-100 dark:hover:text-[#58d7fd] dark:hover:bg-inputBackgroundDark"
                   (click)="deleteTask(task.id)">
                   Delete
                 </button>

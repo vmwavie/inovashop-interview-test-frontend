@@ -10,6 +10,7 @@ module.exports = {
         secondaryDark: '#49c0f8',
         secondaryDarkHover: '#58d7fd',
         subItemLight: '#f6f6f6',
+        subItemDark: '#131f24',
         tertiaryDark: '#202f36',
         tertiaryLight: '#f3f4f6',
         textDark: '#3c3c3c',
