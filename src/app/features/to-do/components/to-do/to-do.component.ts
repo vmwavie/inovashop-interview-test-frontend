@@ -118,6 +118,14 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     );
   }
 
+  logout() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('bearer');
+      window.location.reload();
+    }
+  }
+
   getTodayDate(): string {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = {
