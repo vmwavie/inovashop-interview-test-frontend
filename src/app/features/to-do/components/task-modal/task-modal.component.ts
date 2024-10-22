@@ -67,6 +67,16 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
     this.target = 'View';
 
     this.task = data;
+
+    if (this.task) {
+      this.taskForm.patchValue({
+        title: this.task.title,
+        description: this.task.description,
+      });
+    } else {
+      this.taskForm.reset();
+    }
+
     this.target = target;
   }
 
@@ -95,7 +105,19 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
             }
           );
       } else if (this.target === 'Edit' && this.task) {
-        console.log('Edit task:', formData);
+        this.task.title = formData.title;
+        this.task.description = formData.description;
+
+        this.todoService.updateTask(this.task).subscribe(
+          response => {
+            console.log('Task updated:', response);
+            Swal.fire('Success', 'Task updated successfully!', 'success');
+          },
+          error => {
+            console.error('Error updating task:', error);
+            Swal.fire('Error', 'Error updating task!', 'error');
+          }
+        );
       }
 
       this.taskForm.reset();
