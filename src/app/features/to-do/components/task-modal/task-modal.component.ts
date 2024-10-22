@@ -63,10 +63,10 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
     target: 'Edit' | 'View' | 'Add',
     data: Task | undefined = undefined
   ) {
-    this.task = undefined;
-    this.target = 'View';
-
     this.task = data;
+    this.target = target;
+
+    console.log(target);
 
     if (this.task) {
       this.taskForm.patchValue({
@@ -80,8 +80,6 @@ export class TaskModalComponent implements OnChanges, OnInit, OnInit {
     if (this.target === 'View') {
       this.taskForm.disable();
     }
-
-    this.target = target;
   }
 
   handleToggleModal() {
