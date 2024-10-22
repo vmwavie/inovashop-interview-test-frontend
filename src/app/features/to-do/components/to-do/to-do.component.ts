@@ -8,6 +8,8 @@ import {
   OnInit,
   ViewChild,
   OnDestroy,
+  ElementRef,
+  HostListener,
 } from '@angular/core';
 import { TaskModalComponent } from '../task-modal/task-modal.component';
 import { Subscription } from 'rxjs';
@@ -28,6 +30,7 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     private todoService: ToDoService
   ) {}
   @ViewChild(TaskModalComponent) taskModal!: TaskModalComponent;
+  @ViewChild('dropdownContainer') dropdownContainer!: ElementRef;
 
   page = 1;
   currentPage = 1;
@@ -66,6 +69,15 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
         console.error('Error fetching tasks:', error);
       }
     );
+  }
+
+  closeAllDropdowns() {
+    this.tasks = this.tasks.map(task => ({ ...task, showDropdown: false }));
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout() {
+    this.closeAllDropdowns();
   }
 
   ngOnInit() {
@@ -189,12 +201,20 @@ export class TodoComponent implements AfterViewInit, OnInit, OnDestroy {
     return range;
   }
 
-  toggleDropdown(taskId: number) {
+  toggleDropdown(taskId: number, event?: Event | null) {
+    if (event) {
+      event.stopPropagation();
+    }
+
     this.tasks = this.tasks.map(task =>
       task.id === taskId
         ? { ...task, showDropdown: !task.showDropdown }
         : { ...task, showDropdown: false }
     );
+  }
+
+  closeDropdown() {
+    this.tasks = this.tasks.map(task => ({ ...task, showDropdown: false }));
   }
 
   addNewTask() {
